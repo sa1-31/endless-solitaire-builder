@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Endless Solitaire – Builder’s Edition</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- START MENU -->
+  <div id="startScreen" class="screen active">
+    <h1>Endless Solitaire</h1>
+    <p class="subtitle">Builder’s Edition</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameScreen" class="screen">
+    <header>
+      <h2>Endless Solitaire</h2>
+    </header>
+
+    <div id="grid"></div>
+
+    <footer>
+      Made by <strong>sa1</strong> for Endless
+    </footer>
+  </div>
+
+  <!-- END SCREEN -->
+  <div id="endScreen" class="screen">
+    <h1 id="endTitle"></h1>
+    <button onclick="startGame()">Retry</button>
+    <button onclick="goMenu()">Main Menu</button>
+  </div>
+
+<script src="game.js"></script>
+</body>
+</html>
