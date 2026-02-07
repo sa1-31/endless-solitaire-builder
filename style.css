@@ -46,9 +46,9 @@ button:hover {
 
 #grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  max-width: 350px;
+  max-width: 400px;
   margin: 30px auto;
 }
 
@@ -58,8 +58,8 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
   background: black;
+  cursor: pointer;
 }
 
 .cell img {
