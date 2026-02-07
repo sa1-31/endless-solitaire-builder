@@ -1,90 +1,84 @@
-const gridEl = document.getElementById("grid");
 const startScreen = document.getElementById("startScreen");
 const gameScreen = document.getElementById("gameScreen");
 const endScreen = document.getElementById("endScreen");
 const endTitle = document.getElementById("endTitle");
+const gridEl = document.getElementById("grid");
 
-let grid = [];
-
-const types = [
+let cards = [
   { name: "code", img: "assets/code.png" },
   { name: "docs", img: "assets/docs.png" },
   { name: "bug", img: "assets/bug.png" },
-  { name: "feature", img: "assets/feature.png" }
+  { name: "feature", img: "assets/feature.png" },
+  { name: "nessy", img: "assets/nessy.png" },
+  { name: "endless", img: "assets/endless.png" }
 ];
+
+let gameCards = [];
+let firstCard = null;
+let lockBoard = false;
+let matches = 0;
 
 function startGame() {
   startScreen.classList.remove("active");
   endScreen.classList.remove("active");
   gameScreen.classList.add("active");
 
-  grid = [];
-  gridEl.innerHTML = "";
+  // duplicate cards for pairs
+  gameCards = [...cards, ...cards];
+  shuffle(gameCards);
 
-  for (let i = 0; i < 25; i++) {
-    const type = types[Math.floor(Math.random() * types.length)];
-    grid.push(type);
-  }
+  matches = 0;
+  firstCard = null;
+  lockBoard = false;
 
   renderGrid();
 }
 
+function shuffle(array) {
+  array.sort(() => 0.5 - Math.random());
+}
+
 function renderGrid() {
   gridEl.innerHTML = "";
-  grid.forEach((type, index) => {
+  gameCards.forEach((card, index) => {
     const cell = document.createElement("div");
-    cell.className = `cell ${type.name}`;
-
+    cell.className = "cell";
     const img = document.createElement("img");
-    img.src = type.img;
-    img.alt = type.name;
+    img.src = card.img;
+    img.alt = card.name;
+    img.dataset.index = index;
+    img.style.opacity = "0"; // start hidden
     cell.appendChild(img);
-
-    cell.onclick = () => handleClick(index);
+    cell.onclick = () => flipCard(index);
     gridEl.appendChild(cell);
   });
 }
 
-function handleClick(index) {
-  const card = grid[index];
-  
-  if (card.name === "bug") {
-    lose();
+function flipCard(index) {
+  if (lockBoard) return;
+
+  const cellImg = gridEl.children[index].querySelector("img");
+  cellImg.style.opacity = "1";
+
+  if (!firstCard) {
+    firstCard = index;
+    return;
   }
 
-  if (card.name === "feature") {
-    const neighbors = getNeighbors(index);
-    const neighborNames = neighbors.map(n => n.name);
-    if (neighborNames.includes("code") && neighborNames.includes("docs")) {
-      grid[index] = types[0]; // feature transforms to code after completion
-      checkWin();
-      renderGrid();
-    }
-  }
-}
+  const secondCard = index;
 
-function getNeighbors(i) {
-  const n = [];
-  const row = Math.floor(i / 5);
-  const col = i % 5;
-
-  const dirs = [
-    [-1,0],[1,0],[0,-1],[0,1]
-  ];
-
-  dirs.forEach(d => {
-    const r = row + d[0];
-    const c = col + d[1];
-    if (r >= 0 && r < 5 && c >= 0 && c < 5) {
-      n.push(grid[r * 5 + c]);
-    }
-  });
-  return n;
-}
-
-function checkWin() {
-  if (!grid.some(card => card.name === "feature")) {
-    win();
+  if (gameCards[firstCard].name === gameCards[secondCard].name && firstCard !== secondCard) {
+    matches++;
+    firstCard = null;
+    if (matches === cards.length) win();
+  } else {
+    lockBoard = true;
+    setTimeout(() => {
+      gridEl.children[firstCard].querySelector("img").style.opacity = "0";
+      gridEl.children[secondCard].querySelector("img").style.opacity = "0";
+      firstCard = null;
+      lockBoard = false;
+    }, 1000);
   }
 }
 
@@ -92,12 +86,6 @@ function win() {
   gameScreen.classList.remove("active");
   endScreen.classList.add("active");
   endTitle.innerText = "YOU WIN 🎉";
-}
-
-function lose() {
-  gameScreen.classList.remove("active");
-  endScreen.classList.add("active");
-  endTitle.innerText = "YOU LOSE 💀";
 }
 
 function goMenu() {
